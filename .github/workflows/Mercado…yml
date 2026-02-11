@@ -1,0 +1,101 @@
+
+Navegación en el panel de ayuda
+Mercado
+Documentación
+Introducción a un flujo de trabajo
+Para ayudarte a empezar, esta guía muestra algunos ejemplos básicos. Para consultar la documentación completa de GitHub Actions sobre flujos de trabajo, consulta " Configuración de flujos de trabajo ".
+
+Personalizar cuándo se activan las ejecuciones del flujo de trabajo
+Configure su flujo de trabajo para que se ejecute en eventos push a las ramas mainyrelease/*
+
+on:
+  push:
+    branches:
+    - main
+    - release/*
+Configure su flujo de trabajo para que se ejecute en pull_requesteventos que tengan como destino la mainrama
+
+on:
+  pull_request:
+    branches:
+    - main
+Configure su flujo de trabajo para que se ejecute todos los días de la semana de lunes a viernes a las 2:00 UTC
+
+on:
+  schedule:
+  - cron: "0 2 * * 1-5"
+Para obtener más información, consulte " Eventos que activan flujos de trabajo ".
+
+Ejecución manual de un flujo de trabajo
+Para ejecutar un flujo de trabajo manualmente, puede configurarlo para que use el workflow_dispatchevento. Esto activa el botón "Ejecutar flujo de trabajo" en la pestaña "Acciones".
+
+on:
+  workflow_dispatch:
+Para obtener más información, consulte " Ejecutar manualmente un flujo de trabajo ".
+
+Ejecutar sus trabajos en diferentes sistemas operativos
+GitHub Actions proporciona ejecutores alojados para Linux, Windows y macOS.
+
+Para configurar el sistema operativo para su trabajo, especifique el sistema operativo utilizando runs-on:
+
+jobs:
+  my_job:
+    name: deploy to staging
+    runs-on: ubuntu-22.04
+Los tipos de máquinas virtuales disponibles son:
+
+ubuntu-latest, ubuntu-22.04, oubuntu-20.04
+windows-latest, windows-2022, owindows-2019
+macos-latest, macos-13, omacos-12
+Para obtener más información, consulte " Entornos virtuales para GitHub Actions ".
+
+Usando una acción
+Las acciones son unidades de código reutilizables que cualquier persona puede crear y distribuir en GitHub. Puedes encontrar diversas acciones en GitHub Marketplace y también en el repositorio oficial de acciones .
+
+Para usar una acción, debe especificar el repositorio que la contiene. También le recomendamos que especifique una etiqueta de Git para asegurarse de usar una versión publicada de la acción.
+
+- name: Setup Node
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20.x'
+Para obtener más información, consulte " Sintaxis de flujo de trabajo para acciones de GitHub ".
+
+Ejecutar un comando
+Puede ejecutar comandos en la máquina virtual del trabajo.
+
+- name: Install Dependencies
+  run: npm install
+Para obtener más información, consulte " Sintaxis de flujo de trabajo para acciones de GitHub ".
+
+Ejecutar un trabajo en una matriz de sistemas operativos y versiones de tiempo de ejecución
+Puede ejecutar automáticamente un trabajo en un conjunto de valores diferentes, como diferentes versiones de bibliotecas de código o sistemas operativos.
+
+Por ejemplo, este trabajo utiliza una estrategia matricial para ejecutarse en 3 versiones de Node y 3 sistemas operativos:
+
+jobs:
+  test:
+    name: Test on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node_version: ['18.x', '20.x']
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node_version }}
+
+    - name: npm install, build and test
+      run: |
+        npm install
+        npm run build --if-present
+        npm test
+Para obtener más información, consulte " Sintaxis de flujo de trabajo para acciones de GitHub ".
+
+Ejecutar pasos o trabajos condicionalmente
+GitHub Actions admite condiciones en pasos y trabajos que utilizan datos presentes en el contexto de su flujo de trabajo.
+
+Por ejemplo, para ejecutar un paso solo como parte de un push y no en un pull_request, puede especificar una condición en la if:propiedad 
